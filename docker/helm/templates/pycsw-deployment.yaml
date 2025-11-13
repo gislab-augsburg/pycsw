@@ -33,6 +33,9 @@ spec:
           name: {{ .Values.pycsw.volume_name }}
         - mountPath: {{ .Values.pycsw.datashare_volume_path }}
           name: {{ .Values.pycsw.datashare_volume_name }}
+        - mountPath: /home/pycsw/pycsw/pycsw/core/metadata.py
+          subPath: metadata.py
+          name: pycsw-metadata-py-volume
         securityContext: {}
         
 
@@ -44,3 +47,6 @@ spec:
       - name: {{ .Values.pycsw.datashare_volume_name }}
         persistentVolumeClaim:
           claimName: {{ .Values.pycsw.datashare_claim_name }}
+      - name: pycsw-metadata-py-volume
+        configMap:
+          name: pycsw-metadata-py
