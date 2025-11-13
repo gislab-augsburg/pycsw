@@ -27,14 +27,20 @@ spec:
         name: {{ .Values.pycsw.name }}
         ports:
         - containerPort: {{ .Values.pycsw.container_port }}
-        resources: {}
+        resources: {{- toYaml .Values.pycsw.resources | nindent 12 }}
         volumeMounts:
         - mountPath: {{ .Values.pycsw.volume_path }}
           name: {{ .Values.pycsw.volume_name }}
-        securityContext:
-          readOnlyRootFilesystem: true
+        - mountPath: {{ .Values.pycsw.datashare_volume_path }}
+          name: {{ .Values.pycsw.datashare_volume_name }}
+        securityContext: {}
+        
+
       restartPolicy: Always
       volumes:
       - name: {{ .Values.pycsw.volume_name }}
         configMap:
           name: {{ .Values.pycsw.configmap_name }}
+      - name: {{ .Values.pycsw.datashare_volume_name }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.pycsw.datashare_claim_name }}

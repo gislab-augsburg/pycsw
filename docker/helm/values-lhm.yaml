@@ -1,0 +1,130 @@
+global:
+  namespace: udpkatalog-dev
+
+db:
+  name: db
+  image: docker.io/postgis/postgis:16-3.5
+  port: 5432
+  database: pycsw
+  user: postgres
+  pass: mypass
+  volume_name: db-data
+  volume_path: /var/lib/postgresql/data/pgdata
+  volume_size: 500Mi
+  volume_access_modes: ReadWriteMany
+  volume_storage_type: 
+
+pycsw:
+  name: pycsw
+  image: docker.io/geopython/pycsw:3.0.0-alpha6
+  # latest, 3.0.0-beta1, 3.0.0-alpha7 missing module pycsw!!
+  container_port: 8000
+  service_type: NodePort
+  service_port: 8000
+  service_port_name: http
+  service_node_port: 30000
+  # service_port_protocol: TCP
+  # service_target_port: 8000
+  configmap_name: pycsw-configmap
+  volume_name: pycsw-config
+  volume_path: /etc/pycsw
+  config:
+    server:
+      url: https://pycsw-udpkatalog-dev.apps.test.capk.muenchen.de
+      host: pycsw-udpkatalog-dev.apps.test.capk.muenchen.de
+      mimetype: application/xml; charset=UTF-8
+      encoding: UTF-8
+      language: en-US
+      maxrecords: 10
+      # ogc_schemas_base: http://foo
+      # pretty_print: true
+      # gzip_compresslevel: 8
+      # domainquerytype: range
+      # domaincounts: true
+      # spatial_ranking: true
+      # workers: 2
+      timeout: 30
+    logging:
+      level: ERROR
+      # logfile: /tmp/pycsw.log
+    profiles:
+      - apiso
+    # federatedcatalogues:
+    #   - http://catalog.data.gov/csw
+    manager:
+      transactions: "false"
+      allowed_ips:
+        - 127.0.0.1
+      csw_harvest_pagesize: 10
+    metadata:
+      identification:
+        title: pycsw Geospatial Catalogue
+        description: pycsw is an OARec and OGC CSW server implementation written in Python
+        keywords:
+          - catalogue
+          - discovery
+          - metadata
+        keywords_type: theme
+        fees: None
+        accessconstraints: None
+        terms_of_service: https://creativecommons.org/licenses/by/4.0
+        url: https://example.org
+      license:
+        name: CC-BY 4.0 license
+        url: https://creativecommons.org/licenses/by/4.0
+      provider:
+        name: Organization Name
+        url: https://pycsw.org/
+      contact:
+        name: Lastname, Firstname
+        position: Position Title
+        address: Mailing Address
+        city: City
+        stateorprovince: Administrative Area
+        postalcode: Zip or Postal Code
+        country: Country
+        phone: +xx-xxx-xxx-xxxx
+        fax: +xx-xxx-xxx-xxxx
+        email: Email Address
+        url: Contact URL
+        hours: Hours of Service
+        instructions: During hours of service.  Off on weekends.
+        role: pointOfContact
+      inspire:
+        enabled: "true"
+        languages_supported:
+          - eng
+          - gre
+        default_language: eng
+        date: YYYY-MM-DD
+        gemet_keywords:
+          - Utility and governmental services
+        conformity_service: notEvaluated
+        contact_name: Organization Name
+        contact_email: Email Address
+        temp_extent:
+          begin: YYYY-MM-DD
+          end: YYYY-MM-DD
+    repository:
+      database: postgresql://postgres:mypass@db/pycsw
+      table: records
+      # mappings: path/to/mappings.py
+      # filter: type = 'http://purl.org/dc/dcmitype/Dataset'
+      # max_retries: 5
+      facets:
+        - type
+        - title
+
+  datashare_name: ckan-data
+  datashare_volume_name: ckan-data-volume
+  datashare_volume_path: /home/pycsw/ckan_data
+  datashare_claim_name: ckan
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 1Gi
+

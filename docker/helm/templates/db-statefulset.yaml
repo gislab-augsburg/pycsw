@@ -21,7 +21,7 @@ spec:
       containers:
       - env:
         - name: PGDATA
-          value: {{ .Values.db.volume_path }}
+          value: {{ .Values.db.volume_path }}/data
         - name: POSTGRES_DB
           value: {{ .Values.db.database }}
         - name: POSTGRES_PASSWORD
@@ -34,11 +34,15 @@ spec:
         - containerPort: {{ .Values.db.port }}
         resources: {}
         volumeMounts:
-        - mountPath: {{ .Values.db.volume_path }}
-          name: {{ .Values.db.volume_name }}
-        securityContext:
-          readOnlyRootFilesystem: true
+          - mountPath: {{ .Values.db.volume_path }}
+            name: {{ .Values.db.volume_name }}
+          - mountPath: /var/run/postgresql
+            name: pgrun
+        securityContext: {}
       restartPolicy: Always
+      volumes:
+        - name: pgrun
+          emptyDir: {}
   volumeClaimTemplates:
     - metadata:
         name: {{ .Values.db.volume_name }}

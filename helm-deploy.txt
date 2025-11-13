@@ -1,0 +1,1 @@
+helm upgrade --install pycsw ./docker/helm --values ./docker/helm/values-lhm.yaml
