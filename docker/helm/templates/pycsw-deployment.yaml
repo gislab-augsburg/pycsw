@@ -23,6 +23,8 @@ spec:
           value: {{ .Values.pycsw.config.server.url }}
         - name: PYCSW_REPOSITORY_DATABASE_URI
           value: {{ .Values.pycsw.config.repository.database }}
+        - name: GUNICORN_CMD_ARGS
+          value: "-c /etc/gunicorn/gunicorn_config.py"
         image: {{ .Values.pycsw.image }}
         name: {{ .Values.pycsw.name }}
         ports:
@@ -36,6 +38,9 @@ spec:
         - mountPath: /home/pycsw/pycsw/pycsw/core/metadata.py
           subPath: metadata.py
           name: pycsw-metadata-py-volume
+        - name: gunicorn-config
+          mountPath: /etc/gunicorn
+          #subPath: gunicorn_config.py
         securityContext: {}
         
 
@@ -50,3 +55,6 @@ spec:
       - name: pycsw-metadata-py-volume
         configMap:
           name: pycsw-metadata-py
+      - name: gunicorn-config
+        configMap:
+          name: pycsw-gunicorn-config

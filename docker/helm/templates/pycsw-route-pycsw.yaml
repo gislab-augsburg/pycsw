@@ -2,6 +2,13 @@ apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
   name: pycsw
+  annotations:
+    # Setzt den CORS-Header für alle Anfragen über diese Route
+    haproxy.router.openshift.io/response-header-access-control-allow-origin: "*"
+    # Optional: Erlaubt spezifische Methoden
+    haproxy.router.openshift.io/response-header-access-control-allow-methods: "GET, POST, OPTIONS"
+    # Optional: Erlaubt Header (wichtig für Metadaten-Clients)
+    haproxy.router.openshift.io/response-header-access-control-allow-headers: "Origin, Content-Type, Accept, Authorization"
 spec:
   host: {{ .Values.pycsw.config.server.host }}
   #host: https://pycsw-udpkatalog-dev.apps.capk.muenchen.de
